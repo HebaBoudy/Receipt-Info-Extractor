@@ -9,7 +9,8 @@ uploaded_file = st.file_uploader("Upload a receipt image", type=["png", "jpg", "
 
 if uploaded_file:
     # Display uploaded image
-    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    print("uploaded_file", uploaded_file)
+    st.image(uploaded_file, caption="Uploaded Image", use_container_width=True)
 
     # Process the image
     with st.spinner("Processing..."):
