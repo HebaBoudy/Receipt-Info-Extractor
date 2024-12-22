@@ -6,6 +6,7 @@ from PIL import Image
 from image_transformation import *
 from skimage.feature import canny
 from common_functions import *
+from kmeans_segmentation import find_reciept_kmeans
 
 def process_receipt_image(image):
     """
@@ -19,28 +20,31 @@ def process_receipt_image(image):
         # Convert image to OpenCV format
         image = load_image(image)
 
-        reciept = find_reciept(image)
+        # reciept = find_reciept(image)
 
-        # Preprocess the image (grayscale, thresholding)
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        _, binary = cv2.threshold(reciept, 128, 255, cv2.THRESH_BINARY)
+        # Using K-Means to segment the image
+        reciept = find_reciept_kmeans(image)
         
-        # Perform OCR
+        #* Perform OCR
+        # Preprocess the image (grayscale, thresholding)
+        _, binary = cv2.threshold(reciept, 128, 255, cv2.THRESH_BINARY)
         raw_text = pytesseract.image_to_string(binary)
-        #raw_text = "Date: 12/12/2020\nTotal: $100.00"
         print("raw_text")
         print(raw_text)
 
         # Parse the OCR output (example parsing logic)
-        lines = raw_text.split("\n")
         data = {}
         digits = re.search(r"(\d{4}\s){3}\d{4}", raw_text)
         data["Digits"] = digits.group() if digits else None
 
         date = re.search(r"\d{2}/\d{2}/\d{4}", raw_text)
         data["Date"] = date.group() if date else None
-
         
+        price = re.search(r".+EGP", raw_text)
+        if price:
+            price = price.group().strip()
+            price = re.sub(r"\s*[;,]\s*", ".", price)
+        data["Price"] = price if price else None
         
         print(data)
         return data
