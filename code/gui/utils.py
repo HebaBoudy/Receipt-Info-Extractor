@@ -6,7 +6,9 @@ from PIL import Image
 from image_transformation import *
 from skimage.feature import canny
 from common_functions import *
-from kmeans_segmentation import find_reciept_kmeans
+from kmeans_segmentation import *
+
+PITESSERACT = False
 
 def process_receipt_image(image):
     """
@@ -17,33 +19,50 @@ def process_receipt_image(image):
         Dictionary with extracted data.
     """
     try:
-        # Convert image to OpenCV format
+        image_path = 'imgs/'+ image.name
+        if not os.path.exists(image_path):
+            image = image.name.split('.')[0] + ".jpeg"
         image = load_image(image)
 
         # reciept = find_reciept(image)
 
         # Using K-Means to segment the image
-        reciept = find_reciept_kmeans(image)
-        
-        #* Perform OCR
-        # Preprocess the image (grayscale, thresholding)
-        _, binary = cv2.threshold(reciept, 128, 255, cv2.THRESH_BINARY)
-        raw_text = pytesseract.image_to_string(binary)
-        print("raw_text")
-        print(raw_text)
+        reciept ,reciept_gray= find_reciept_kmeans(image)
+        digits = None
+        # date = None
+        price = None
+        if(PITESSERACT):
+
+            #* Perform OCR
+            # Preprocess the image (grayscale, thresholding)
+            _, binary = cv2.threshold(reciept_gray, 128, 255, cv2.THRESH_BINARY)
+            raw_text = pytesseract.image_to_string(binary) 
+            print("raw_text")
+            print(raw_text)
+            digits = re.search(r"(\d{4}\s){3}\d{4}", raw_text)
+            digits = digits.group().strip() if digits else None
+
+            # date = re.search(r"\d{2}/\d{2}/\d{4}", raw_text)
+            # date = date.group().strip() if date else None
+            price = re.search(r".+EGP", raw_text)
+            if price:
+                price = price.group().strip()
+                price = re.sub(r"\s*[;,]\s*", ".", price)
+           
+        else :
+            # digits = find_digits(reciept) 
+            # print("after find_digits")
+            # splitted_digits = split_digits(digits) 
+            # print("after split_digits")
+            # digits = post_template_matching(splitted_digits)
+            # print(digits)
+            digits = find_digits_basel(reciept_gray) 
+            price = get_price(reciept_gray)
 
         # Parse the OCR output (example parsing logic)
         data = {}
-        digits = re.search(r"(\d{4}\s){3}\d{4}", raw_text)
-        data["Digits"] = digits.group() if digits else None
-
-        date = re.search(r"\d{2}/\d{2}/\d{4}", raw_text)
-        data["Date"] = date.group() if date else None
-        
-        price = re.search(r".+EGP", raw_text)
-        if price:
-            price = price.group().strip()
-            price = re.sub(r"\s*[;,]\s*", ".", price)
+        data["Digits"] = digits
+        # data["Date"] =   date        
         data["Price"] = price if price else None
         
         print(data)
@@ -244,4 +263,3 @@ def find_digits(image: np.ndarray) -> np.ndarray:
     x, y, w, h = add_padding(x, y, w, h, padding_x=0, padding_y=4)
 
     return crop_image(image, x, y, w, h)
-
