@@ -4,3 +4,4 @@ venv/
 **/__pycache__/
 
 code/aspect_ratio**
+code/results

@@ -11,6 +11,7 @@ from skimage.morphology import   binary_erosion, binary_dilation, binary_closing
 from scipy.signal import convolve2d
 from scipy import fftpack
 import math
+import cv2
 
 from skimage.util import random_noise
 from skimage.filters import median, threshold_otsu
@@ -116,3 +117,57 @@ def fix_image_type(image: np.ndarray):
 
 def add_padding(x: float, y: float, width: float, height: float, padding_x: float, padding_y: float):
     return x - padding_x // 2, y - padding_y // 2, width + padding_x, height + padding_y
+
+
+def contrast_enhancement(image: np.ndarray, with_plot=False):
+    if image.ndim > 2:
+        r_image, g_image, b_image = cv2.split(image)
+
+        r_image_eq = cv2.equalizeHist(r_image)
+        g_image_eq = cv2.equalizeHist(g_image)
+        b_image_eq = cv2.equalizeHist(b_image)
+
+        image_eq = cv2.merge((r_image_eq, g_image_eq, b_image_eq))
+        cmap_val = None
+    else:
+        image_eq = cv2.equalizeHist(image)
+        cmap_val = 'gray'
+
+    if with_plot:
+        fig = plt.figure(figsize=(10, 20))
+
+        ax1 = fig.add_subplot(2, 2, 1)
+        ax1.axis("off")
+        ax1.title.set_text('Original')
+        ax2 = fig.add_subplot(2, 2, 2)
+        ax2.axis("off")
+        ax2.title.set_text("Equalized")
+
+        ax1.imshow(image, cmap=cmap_val)
+        ax2.imshow(image_eq, cmap=cmap_val)
+        return True
+    return image_eq
+
+def getThreshold(image: np.ndarray):
+    # gray_scaled_image = image
+    # if (image.ndim >= 3):
+    #     gray_scaled_image = rgb2gray(image)
+    # gray_scaled_image = (gray_scaled_image * 255).astype(np.uint8)
+    # hist = custom_histogram(gray_scaled_image)
+    hist, _ = np.histogram(image, bins=256, range=(0, 256))
+    
+    total_number_of_pixels = np.sum(hist)
+    numerator = np.sum(np.array([(hist[i] * i) for i in range(256)]))
+    threshold_old = int(np.round(numerator / total_number_of_pixels))
+
+    while True:
+        lower_numerator = np.sum(np.array([(hist[i] * i) for i in range(threshold_old)]))
+        upper_numerator = np.sum(np.array([(hist[i] * i) for i in range(threshold_old, 256)]))
+        lower_pixel_mean = np.round(lower_numerator / np.sum(hist[:threshold_old]))
+        upper_pixel_mean = np.round(upper_numerator / np.sum(hist[threshold_old:]))
+
+        threshold = int((lower_pixel_mean + upper_pixel_mean) / 2)
+        if threshold == threshold_old:
+            break
+        threshold_old = threshold
+    return threshold
