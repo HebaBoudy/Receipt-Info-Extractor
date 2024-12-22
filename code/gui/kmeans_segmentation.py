@@ -45,6 +45,31 @@ def find_reciept_kmeans(image: np.ndarray):
     return receipt,receiptGrey
     
 
+def segment_receipt_by_colors(image: np.ndarray):
+    """
+    Segment the receipt image by colors using K-Means clustering.
+    Args:
+        image: Extracted receipt image.
+    Returns:
+        Segmented receipt image.
+    """
+    # Perform K-Means segmentation
+    labels, centers = kmeans(image, 2)
+
+    white_label = np.argmax(np.sum(centers, axis=1))  # Identify the white region
+    mask = (labels == white_label)
+    segmented_mask = mask.reshape(image.shape[:2])
+
+    # Apply mask to the original image
+    segmented_image = cv2.bitwise_and(image, image, mask=segmented_mask.astype(np.uint8))
+
+    segmentedImageRgb = rgb2gray(segmented_image)
+    binarySeg = basel_thresholding(segmentedImageRgb)
+
+    opened = binary_opening(binarySeg,np.ones((2,2)), iterations=15) #problem 2
+
+    return segmented_image, opened
+
 def kmeans(image_rgb,k,randomSeed = 42):
     cv2.setRNGSeed(randomSeed)
 
