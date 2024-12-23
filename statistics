@@ -1,0 +1,86 @@
+Running Image 10
+Predicted Digits: 8888843248870688
+Expected Digits: 4811 3672 1092 6684, Digits: 8888843248870688
+Image 10 done.
+Running Image 11
+Predicted Digits: 4811367210926684
+Expected Digits: 4811 3672 1092 6684, Digits: 4811367210926684
+Image 11 done.
+Running Image 12
+Predicted Digits: 4811367210926684
+Expected Digits: 4811 3672 1092 6684, Digits: 4811367210926684
+Image 12 done.
+Running Image 13
+Predicted Digits: 4811367210926684
+Expected Digits: 4811 3672 1092 6684, Digits: 4811367210926684
+Image 13 done.
+Running Image 14
+Predicted Digits: 4811367210926684
+Expected Digits: 4811 3672 1092 6684, Digits: 4811367210926684
+Image 14 done.
+Skipping Image 15. Receipt is rotated with an angle of >= 90 degrees.
+Skipping Image 16. Receipt is rotated with an angle of >= 90 degrees.
+Skipping Image 17. Receipt is rotated with an angle of >= 90 degrees.
+Skipping Image 18. Receipt is rotated with an angle of >= 90 degrees.
+Running Image 19
+Predicted Digits: 1130776335508717
+Expected Digits: 1130 7763 3550 8717, Digits: 1130776335508717
+Image 19 done.
+Running Image 20
+Predicted Digits: 1130776335508717
+Expected Digits: 1130 7763 3550 8717, Digits: 1130776335508717
+Image 20 done.
+Running Image 21
+Predicted Digits: 1130776335508717
+Expected Digits: 1130 7763 3550 8717, Digits: 1130776335508717
+Image 21 done.
+Running Image 22
+Predicted Digits: 1130776335508717
+Expected Digits: 1130 7763 3550 8717, Digits: 1130776335508717
+Image 22 done.
+Running Image 23
+Predicted Digits: 1187763350508717
+Expected Digits: 1130 7763 3550 8717, Digits: 1187763350508717
+Image 23 done.
+Skipping Image 24. Receipt is rotated with an angle of >= 90 degrees.
+Running Image 25
+Predicted Digits: 0086753953675630
+Expected Digits: 0086 7539 5367 5630, Digits: 0086753953675630
+Image 25 done.
+Running Image 26
+Error in Image 26: operands could not be broadcast together with shapes (7,12) (11,11)
+Image 26 done.
+Running Image 27
+Error in Image 27: 'NoneType' object has no attribute 'reshape'
+Image 27 done.
+Running Image 28
+Predicted Digits: 7667641320169051
+Expected Digits: 7667 6413 2016 9051, Digits: 7667641320169051
+Image 28 done.
+Running Image 29
+Predicted Digits: 1
+Expected Digits: 7667 6413 2016 9051, Digits: 1
+Image 29 done.
+Running Image 30
+Error in Image 30: local variable 'cropped_receipt' referenced before assignment
+Image 30 done.
+Running Image 31
+Error in Image 31: 'NoneType' object has no attribute 'reshape'
+Image 31 done.
+Running Image 32
+Predicted Digits: 3784371378772058
+Expected Digits: 3784 3713 7877 2058, Digits: 3784371378772058
+Image 32 done.
+Running Image 33
+Predicted Digits: 2444678767406412
+Expected Digits: 3784 3713 7877 2058, Digits: 2444678767406412
+Image 33 done.
+Running Image 34
+Predicted Digits: 2444678767406412
+Expected Digits: 3784 3713 7877 2058, Digits: 2444678767406412
+Image 34 done.
+Running Image 35
+Predicted Digits: 9080415813566057
+Expected Digits: 9080 4158 1356 6057, Digits: 9080415813566057
+Image 35 done.
+All images done.

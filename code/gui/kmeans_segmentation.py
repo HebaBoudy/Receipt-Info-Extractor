@@ -36,6 +36,8 @@ def find_reciept_kmeans(image: np.ndarray):
     maxC = max(contours, key=cv2.contourArea)
     c = np.array([[p[1], p[0]] for p in maxC], dtype=np.int32)
     reciept_contour = approximate_to_rectangle(c)
+    if reciept_contour is None:
+        raise ValueError("Failed to approximate the receipt to a rectangle.")
 
     input_points = find_polygon_corners(reciept_contour)
     input_points = fix_outlier_point_with_distance(input_points)
@@ -319,7 +321,7 @@ def match_template(image, templates_folder):
                 if corr_value > highest_corr:
                     highest_corr = corr_value
                     best_match = str(digit)
-    print("finished match template" ,best_match)
+    # print("finished match template" ,best_match)
     
     return best_match
 
@@ -353,7 +355,7 @@ def post_template_matching(digits):
     # Loop through each letter image
     predicted_digits = []
     templates_folder = "code/templates2"  # Path to your templates2 folder
-    print(os.path.exists(templates_folder))
+    # print(os.path.exists(templates_folder))
     #show_images(letters, ["Letter Image"])
 
     for digit_img in digits:
@@ -382,7 +384,7 @@ def process_contours(img,min_contour_size = 100):
 
     # Find contours of the digits
     contours = find_contours(img, 0.8)
-    print("Number of contours found:", len(contours))
+    # print("Number of contours found:", len(contours))
 
     # Keep only the big contours
     contours = [contour for contour in contours if contour.shape[0] > min_contour_size]
@@ -486,15 +488,16 @@ def find_digits_basel(receiptGrey):
     if max_contour is not None:
         x, y, w, h = cv2.boundingRect(max_contour)
         cropped_receipt = receiptBinaryCropped[y:y+h, x:x+w] 
-
+    if cropped_receipt is None:
+        raise ValueError("Failed to find the digits in the receipt.")
     img = cropped_receipt
     # process_contours(cropped_receipt)
 
     min_contour_size = 100
     while True:
         process_contours(img,min_contour_size) # here 
-        print("Current min_contour_size:", min_contour_size)
-        print("Number of letters:", len(letters))
+        # print("Current min_contour_size:", min_contour_size)
+        # print("Number of letters:", len(letters))
         if len(letters) >= 16 or min_contour_size <= 40:
             break
         min_contour_size -= 5  # Reduce the contour size threshold incrementally
@@ -585,8 +588,8 @@ def get_price(receiptGrey):
     while True:
         img = croppedNumbers
         letters = process_contours(img,min_contour_size)
-        print("Current min_contour_size:", min_contour_size)
-        print("Number of letters:", len(letters))
+        # print("Current min_contour_size:", min_contour_size)
+        # print("Number of letters:", len(letters))
         if len(letters) >= 7 or min_contour_size <= 40:
             break
         min_contour_size -= 5  # Red
