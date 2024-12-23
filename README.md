@@ -36,7 +36,9 @@ We have **2 Pipelines** for the OCR process each one has a different approach to
         ```shell
         streamlit run code/gui/app.py
         ```
-     2. **Step 2**: Open the link in the browser.
-     3. **Step 3**: Upload the image and choose the pipeline.
-     4. **Step 4**: The extracted 16 digits, will be displayed in the browser.
+     2. **Step 2**: (optional if you want to try pretrained model ) Download Tesseract : https://sourceforge.net/projects/tesseract-ocr.mirror/
+
+     3. **Step 2**: Open the link in the browser.
+     4. **Step 3**: Upload the image and choose the pipeline.
+     5. **Step 4**: The extracted 16 digits, will be displayed in the browser.
    - **Note**: The GUI will be running on the local machine.
