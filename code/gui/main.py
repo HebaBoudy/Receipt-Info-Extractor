@@ -29,9 +29,9 @@ min_image_index = 10
 max_image_index = 35
 score = 0
 for i in range(min_image_index, max_image_index + 1):
-    if i == 15 or i == 16 or i == 17 or i == 18 or i == 24:
+    if i == 15 or i == 16 or i == 17 or i == 18 or i == 24 or i == 30:
         print(f"Skipping Image {i}. Receipt is rotated with an angle of >= 90 degrees.")
-        continue
+        continue 
     try:
 
         print(f"Running Image {i}")

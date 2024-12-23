@@ -7,7 +7,7 @@ from image_transformation import *
 from skimage.feature import canny
 from common_functions import *
 from kmeans_segmentation import *
-
+from PIL import Image
 PITESSERACT = True
 
 def process_receipt_image(image):
@@ -36,7 +36,8 @@ def process_receipt_image(image):
             #* Perform OCR
             # Preprocess the image (grayscale, thresholding)
             _, binary = cv2.threshold(reciept_gray, 128, 255, cv2.THRESH_BINARY)
-            raw_text = pytesseract.image_to_string(binary) 
+            binary_pil = Image.fromarray(binary.astype(np.uint8))
+            raw_text = pytesseract.image_to_string(binary_pil) 
             print("raw_text")
             print(raw_text)
             digits = re.search(r"(\d{4}\s){3}\d{4}", raw_text)
