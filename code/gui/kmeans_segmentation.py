@@ -202,7 +202,7 @@ def find_digits(image: np.ndarray) -> np.ndarray:
 
     dilation_image = dialation(binary_image, 3, 25)
     erosion_image = erosion(dilation_image, 3, 25)
-    show_images([image, gray_image, binary_image, dilation_image, erosion_image], ["Original", "Gray", "Binary", "Dilation", "Erosion"])
+    # show_images([image, gray_image, binary_image, dilation_image, erosion_image], ["Original", "Gray", "Binary", "Dilation", "Erosion"])
 
     dilation_image = fix_image_type(dilation_image)
 
@@ -264,7 +264,7 @@ def split_digits(digits: np.ndarray):
     for _ in range(max_iter):
         eroded = erosion(binary, vertical_erosion, 2)
 
-        show_images([eroded], ["Binary"])
+        # show_images([eroded], ["Binary"])
 
         # Find contours
         contours, _ = cv2.findContours(fix_image_type(eroded), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -373,16 +373,16 @@ def process_contours(img,min_contour_size = 100):
 
     # Keep only the big contours
     contours = [contour for contour in contours if contour.shape[0] > min_contour_size]
-    print("Number of contours after filtering:", len(contours))
+    # print("Number of contours after filtering:", len(contours))
 
-    fig, ax = plt.subplots()
-    ax.imshow(img, cmap=plt.cm.gray)
-    for contour in contours:
-        ax.plot(contour[:, 1], contour[:, 0], linewidth=2, color='red')
-    ax.axis('image')
-    ax.set_xticks([])
-    ax.set_yticks([])
-    plt.show()
+    # fig, ax = plt.subplots()
+    # ax.imshow(img, cmap=plt.cm.gray)
+    # for contour in contours:
+    #     ax.plot(contour[:, 1], contour[:, 0], linewidth=2, color='red')
+    # ax.axis('image')
+    # ax.set_xticks([])
+    # ax.set_yticks([])
+    # plt.show()
 
     queue = []
     existing_regions = []  # To store existing bounding boxes
