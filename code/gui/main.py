@@ -1,5 +1,5 @@
 from utils import * 
-
+from PIL import Image
 def get_expected(i):
     if (i >= 10 and i <= 18) or i == 24:
         expected_digits = "4811 3672 1092 6684"
@@ -22,7 +22,7 @@ def get_expected(i):
     elif i == 35:
         expected_digits = "9080 4158 1356 6057"
         expected_price = "25.00EGP"
-    return expected_digits, expected_price
+    return expected_digits, None
 
 base_path = "imgs/"
 min_image_index = 10
@@ -40,14 +40,25 @@ for i in range(min_image_index, max_image_index + 1):
             image_path = base_path + str(i) + ".jpeg"
         image = load_image(image_path)
 
-        os.makedirs("results", exist_ok=True)
+        # os.makedirs("results", exist_ok=True)
         reciept, reciept_gray= find_reciept_kmeans(image)
-        digits = find_digits_basel(reciept_gray)
-        price = get_price(reciept_gray)
+        print("after kmeans")
+        _, binary = cv2.threshold(reciept_gray, 128, 255, cv2.THRESH_BINARY)
+        print('after binary thres')
+        # Convert the binary image to a format suitable for pytesseract
+        binary_pil = Image.fromarray(binary.astype(np.uint8))
+        raw_text = pytesseract.image_to_string(binary_pil) 
+        
+        # print("raw_text")
+        # print(raw_text)
+        digits = re.search(r"(\d{4}\s){3}\d{4}", raw_text)
+        digits = digits.group().strip() if digits else None
+
+        # price = get_price(reciept_gray)
 
         expected_digits, expected_price = get_expected(i)
         print(f"Expected Digits: {expected_digits}, Digits: {digits}")
-        print(f"Expected Price: {expected_price}, Price: {price}")
+        # print(f"Expected Price: {expected_price}, Price: {price}")
         if digits == expected_digits: # and price == expected_price:
             score += 1
     except Exception as e:
