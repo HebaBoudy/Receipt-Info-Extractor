@@ -8,7 +8,7 @@ from skimage.feature import canny
 from common_functions import *
 from kmeans_segmentation import *
 from PIL import Image
-PITESSERACT = True
+PITESSERACT = False
 
 def process_receipt_image(image):
     """
