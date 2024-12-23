@@ -10,25 +10,8 @@ from skimage import exposure
 from skimage.measure import find_contours
 from skimage.draw import rectangle
 from PIL import Image
+from common_functions import fix_image_type
 
-
-def Erode(img,windowSize):
-    window=np.ones((windowSize,windowSize))
-    Final=np.zeros(img.shape)
-    for i in range(img.shape[0]-windowSize+1):
-        for j in range(img.shape[1]-windowSize+1):
-            Fit=np.all(np.logical_and(window,img[i:i+windowSize,j:j+windowSize]))
-            Final[i,j]=Fit
-    return Final
-
-def Dilate(img,windowSize):
-    window=np.ones((windowSize,windowSize))
-    Final=np.zeros(img.shape)
-    for i in range(img.shape[0]-windowSize+1):
-        for j in range(img.shape[1]-windowSize+1):
-            Hit=np.any(np.logical_and(window,img[i:i+windowSize,j:j+windowSize]))
-            Final[i,j]=Hit
-    return Final 
 def custom_erosion (image , window_size ):
     height ,  width  = image.shape 
     edge_y = window_size[0] // 2
@@ -56,41 +39,6 @@ def custom_dilation (image , window_size ):
             multiplied_img = image_window*window
             out_image_dilation[y,x] = np.any(multiplied_img == 1) 
     return out_image_dilation
-def Gamma_correction(img,gamma):
-    img = img / img.max()
-    img = img* 255
-    img = img.astype(np.uint8)
-    img = exposure.adjust_gamma(img, gamma)
-    return img
-
-def houghTransform(img):
-    orgimg=img.copy()
-    cdst = orgimg.copy()
-    cdstP = np.copy(cdst)
-    
-    lines = cv2.HoughLines(orgimg, 1, np.pi / 180, 150, None, 0, 0)
-    
-    if lines is not None:
-        for i in range(0, len(lines)):
-            rho = lines[i][0][0]
-            theta = lines[i][0][1]
-            a = math.cos(theta)
-            b = math.sin(theta)
-            x0 = a * rho
-            y0 = b * rho
-            pt1 = (int(x0 + 1000*(-b)), int(y0 + 1000*(a)))
-            pt2 = (int(x0 - 1000*(-b)), int(y0 - 1000*(a)))
-            cv2.line(cdst, pt1, pt2, (255,255,255), 2, cv2.LINE_AA)
-    
-    
-    linesP = cv2.HoughLinesP(orgimg, 1, np.pi / 180, 50, None, 50, 60)
-    
-    if linesP is not None:
-        for i in range(0, len(linesP)):
-            l = linesP[i][0]
-            cv2.line(cdstP, (l[0], l[1]), (l[2], l[3]), (255,255,255), 2, cv2.LINE_AA)
-    
-    return cdstP
 
 # Window size can be rectangle (not equal sides)
 def erosion(image: np.ndarray, size_y: int = 3, size_x: int = 3):
@@ -125,3 +73,51 @@ def dialation(image: np.ndarray, size_y: int = 3, size_x: int = 3):
             output_img[row, col] = np.any(binary_img[row - edge_y: row + edge_y + size_y_odd, col - edge_x: col + edge_x + size_x_odd] * window)
 
     return output_img
+
+
+def getThreshold(image: np.ndarray):
+    # gray_scaled_image = image
+    # if (image.ndim >= 3):
+    #     gray_scaled_image = rgb2gray(image)
+    # gray_scaled_image = (gray_scaled_image * 255).astype(np.uint8)
+    # hist = custom_histogram(gray_scaled_image)
+    hist, _ = np.histogram(image, bins=256, range=(0, 256))
+    
+    total_number_of_pixels = np.sum(hist)
+    numerator = np.sum(np.array([(hist[i] * i) for i in range(256)]))
+    threshold_old = int(np.round(numerator / total_number_of_pixels))
+
+    while True:
+        lower_numerator = np.sum(np.array([(hist[i] * i) for i in range(threshold_old)]))
+        upper_numerator = np.sum(np.array([(hist[i] * i) for i in range(threshold_old, 256)]))
+        lower_pixel_mean = np.round(lower_numerator / np.sum(hist[:threshold_old]))
+        upper_pixel_mean = np.round(upper_numerator / np.sum(hist[threshold_old:]))
+
+        threshold = int((lower_pixel_mean + upper_pixel_mean) / 2)
+        if threshold == threshold_old:
+            break
+        threshold_old = threshold
+    return threshold
+
+
+def local_thresholding(image: np.ndarray, splits: int, axis: int = 0):
+    paritions = np.split(image, splits, axis=axis)
+    thresholds = [getThreshold(partition) for partition in paritions]
+    thresholded_partitions = [partition > threshold for partition, threshold in zip(paritions, thresholds)]
+    image_thresholded = np.concatenate(thresholded_partitions, axis=axis)
+    return image_thresholded
+
+# Source: https://stackoverflow.com/questions/46390779/automatic-white-balancing-with-grayworld-assumption
+def white_balance(img):
+    result = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+    avg_a = np.average(result[:, :, 1])
+    avg_b = np.average(result[:, :, 2])
+    result[:, :, 1] = result[:, :, 1] - ((avg_a - 128) * (result[:, :, 0] / 255.0) * 1.1)
+    result[:, :, 2] = result[:, :, 2] - ((avg_b - 128) * (result[:, :, 0] / 255.0) * 1.1)
+    result = cv2.cvtColor(result, cv2.COLOR_LAB2BGR)
+    return result
+
+def gamma_correction(img: np.ndarray, gamma):
+    img = fix_image_type(img)
+    img = exposure.adjust_gamma(img, gamma)
+    return img

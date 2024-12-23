@@ -41,8 +41,8 @@ def find_reciept_kmeans(image: np.ndarray):
     input_points = fix_outlier_point_with_distance(input_points)
 
     receipt = transform_perspective(image, input_points)
-    receiptGrey = rgb2gray(receipt) 
-    return receipt,receiptGrey
+    receiptGrey = cv2.cvtColor(receipt, cv2.COLOR_BGR2GRAY)
+    return receipt, receiptGrey
     
 
 def segment_receipt_by_colors(image: np.ndarray):
@@ -192,7 +192,7 @@ def find_digits(image: np.ndarray) -> np.ndarray:
     """Main functionality is to detect the 16 digits from the receipt."""
     height, width, _ = image.shape
     image = image.copy()
-    image = Gamma_correction(image, 1.5)
+    image = gamma_correction(image, 1.5)
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) * 255
     smoothed_image = cv2.GaussianBlur(gray_image, (5, 5), 0)
     
@@ -252,6 +252,9 @@ def find_digits(image: np.ndarray) -> np.ndarray:
     return crop_image(image, x, y, w, h)
 
 def split_digits(digits: np.ndarray):
+    if digits is None or digits.size == 0:
+        raise ValueError("Input image is empty or not loaded correctly.")
+    
     # Convert to grayscale
     gray = cv2.cvtColor(digits, cv2.COLOR_BGR2GRAY)
 
@@ -259,12 +262,15 @@ def split_digits(digits: np.ndarray):
     binary = convert_to_binary(gray)
     binary = np.bitwise_not(binary)
 
-    max_iter = 5
-    vertical_erosion = 4
-    for _ in range(max_iter):
-        eroded = erosion(binary, vertical_erosion, 2)
+    max_iter = 6
+    vertical_erosion = 2
+    for i in range(max_iter):
+        if i != 0:
+            eroded = erosion(binary, vertical_erosion, 1)
+        else:
+            eroded = binary
 
-        # show_images([eroded], ["Binary"])
+        show_images([eroded], ["Binary"])
 
         # Find contours
         contours, _ = cv2.findContours(fix_image_type(eroded), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -317,7 +323,7 @@ def match_template(image, templates_folder):
     
     return best_match
 
-def preprocess_image(img, dimensions):
+def template_preprocess_image(img, dimensions):
     img_resized = cv2.resize(img, dimensions)
     
     # Convert RGBA to RGB if necessary
@@ -334,12 +340,12 @@ def preprocess_image(img, dimensions):
 
     #now make it binary
     img_binary = np.zeros(img_gray.shape)
-    img_binary[img_gray > 0.9] = 255
+    img_binary[img_gray > 0.5] = 255
     #img_binary *= 255
     img_binary = img_binary.astype(np.uint8)
     #show_images([img_binary], ["Binary Image"])
-    print(img_gray.max())
-    print("finished preprocess image")
+    # print(img_gray.max())
+    # print("finished preprocess image")
     return img_binary
 
 
@@ -354,15 +360,22 @@ def post_template_matching(digits):
         #show_images([letter_img])  # Display the current letter
 
         # Preprocess the image (ensure it matches template dimensions)
-        processed_img = preprocess_image(digit_img, (185,386))
+        processed_img = template_preprocess_image(digit_img, (185,386))
+        # show_images([digit_img, processed_img], ["Original", "Processed Image"])
 
         # Perform template matching
         predicted_digit = match_template(processed_img, templates_folder)
         predicted_digits.append(predicted_digit)
 
-    # Display the result
-    print("Predicted Digits:", "".join(predicted_digits)) 
-    return "".join(predicted_digits)
+    if len(predicted_digits) == 16 and all([digit is not None for digit in predicted_digits]):
+        # print("Predicted Digits:", "".join(predicted_digits))
+
+        predicted_digits = "".join(predicted_digits)
+        predicted_digits = ' '.join([predicted_digits[i:i+4] for i in range(0, len(predicted_digits), 4)])
+        return "".join(predicted_digits)
+    else:
+        print("Error: Could not detect all digits.")
+        return None
 
 def process_contours(img,min_contour_size = 100):
     global contours, queue, existing_regions, letters
@@ -439,6 +452,7 @@ def split_large_image(images,val = 1.6):
             break  # Stop after splitting the first large image
 
     return images
+
 def find_digits_basel(receiptGrey):
     threshold = 0.5
     receiptBinary = receiptGrey > threshold
@@ -468,6 +482,7 @@ def find_digits_basel(receiptGrey):
             max_contour = contour
 
     # If a valid contour is found, calculate its bounding box and crop the region
+    cropped_receipt = None
     if max_contour is not None:
         x, y, w, h = cv2.boundingRect(max_contour)
         cropped_receipt = receiptBinaryCropped[y:y+h, x:x+w] 
@@ -515,6 +530,7 @@ def findDigitsInDilated(binarydilated, receiptBinaryCropped, numberOfContours):
         return cropped_receipt
     else:
         return None
+
 def match_template_with_symbols(image, templates_folder):
     best_match = None
     highest_corr = -1
@@ -577,11 +593,11 @@ def get_price(receiptGrey):
 
     # Loop through each letter image
     predictedPrice = []
-    templates_folder = "code/templates2" 
+    templates_folder = "code/templates2"
     letters = letters[:4]
     for letter_img in letters:
         # Preprocess the image (ensure it matches template dimensions)
-        processed_img = preprocess_image(letter_img, (185, 386))
+        processed_img = template_preprocess_image(letter_img, (185, 386))
 
         # Perform template matching
         predicted_symbol = match_template_with_symbols(processed_img, templates_folder)
