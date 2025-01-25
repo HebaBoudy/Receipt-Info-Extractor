@@ -25,6 +25,7 @@ We have **2 Pipelines** for the OCR process each one has a different approach to
        2. Save the 16 digits in `results` folder (inside code folder)
        3. A visualization of the results will be displayed in as an output for this cell (last cell).
 2. **GUI!** - Streamlit:
+
    - **Approach**:
      - **Step 1**: Upload the image.
      - **Step 2**: Extract the text from the receipt using one of the following opions
@@ -32,6 +33,7 @@ We have **2 Pipelines** for the OCR process each one has a different approach to
        2. **Pipeline 2**.
        3. **Tesseract OCR**.
    - **How to run**:
+
      1. **Step 1**: Run the following command in the terminal.
         ```shell
         streamlit run code/gui/app.py
@@ -41,4 +43,7 @@ We have **2 Pipelines** for the OCR process each one has a different approach to
      3. **Step 2**: Open the link in the browser.
      4. **Step 3**: Upload the image and choose the pipeline.
      5. **Step 4**: The extracted 16 digits, will be displayed in the browser.
+
    - **Note**: The GUI will be running on the local machine.
+
+---
