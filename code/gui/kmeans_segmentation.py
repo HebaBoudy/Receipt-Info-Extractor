@@ -28,7 +28,7 @@ def find_reciept_kmeans(image: np.ndarray):
     segmented_image = cv2.bitwise_and(image, image, mask=segmented_mask.astype(np.uint8))
 
     segmentedImageRgb = rgb2gray(segmented_image)
-    binarySeg = basel_thresholding(segmentedImageRgb)
+    binarySeg = kmeans_approach_thresholding(segmentedImageRgb)
 
     opened = binary_opening(binarySeg,np.ones((2,2)), iterations=15) #problem 2
     # Find the contours of the receipt
@@ -67,7 +67,7 @@ def segment_receipt_by_colors(image: np.ndarray):
     segmented_image = cv2.bitwise_and(image, image, mask=segmented_mask.astype(np.uint8))
 
     segmentedImageRgb = rgb2gray(segmented_image)
-    binarySeg = basel_thresholding(segmentedImageRgb)
+    binarySeg = kmeans_approach_thresholding(segmentedImageRgb)
 
     opened = binary_opening(binarySeg,np.ones((2,2)), iterations=15) #problem 2
 
@@ -102,7 +102,7 @@ def kmeans(image_rgb,k,randomSeed = 42):
     return labels, centers
 
 
-def basel_thresholding(image: np.ndarray):
+def kmeans_approach_thresholding(image: np.ndarray):
     threshold = 0.6 * image.max()
     mask = image > threshold
     binarySeg = np.zeros(image.shape)
@@ -456,7 +456,7 @@ def split_large_image(images,val = 1.6):
 
     return images
 
-def find_digits_basel(receiptGrey):
+def find_digits_kmeans_approach(receiptGrey):
     threshold = 0.5
     receiptBinary = receiptGrey > threshold
     receiptBinaryInverted = np.invert(receiptBinary)

@@ -42,7 +42,7 @@ def process_receipt_image(image, pipeline_option):
         elif pipeline_option == "Pipeline 2: K-means Only":
             # Apply K-means clustering only
             reciept ,reciept_gray= find_reciept_kmeans(image)
-            digits = find_digits_basel(reciept_gray) 
+            digits = find_digits_kmeans_approach(reciept_gray) 
             try:
                 price = get_price(reciept_gray)
             except:
