@@ -3,7 +3,6 @@ import cv2
 import pytesseract
 import numpy as np
 from PIL import Image
-from image_transformation import *
 from skimage.feature import canny
 from common_functions import *
 from kmeans_segmentation import *
@@ -19,6 +18,7 @@ def process_receipt_image(image, pipeline_option):
     """
     try:
         image_path = 'imgs/'+ image.name
+        print(image_path, os.path.dirname(os.path.abspath(__file__)))
         if not os.path.exists(image_path):
             image = image.name.split('.')[0] + ".jpeg"
         image = load_image(image)

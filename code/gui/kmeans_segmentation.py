@@ -3,11 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from skimage.color import rgb2gray
 from skimage.measure import find_contours
-from scipy.ndimage import binary_erosion, binary_closing, binary_opening, binary_dilation
 from common_functions import * 
-from image_transformation import * 
+from scipy.ndimage import binary_erosion, binary_closing, binary_opening, binary_dilation
 import heapq
+
 PITESSERACT = False
+
 def find_reciept_kmeans(image: np.ndarray):
     """
     Find the receipt in the image using K-Means segmentation.
@@ -354,7 +355,7 @@ def template_preprocess_image(img, dimensions):
 def post_template_matching(digits):
     # Loop through each letter image
     predicted_digits = []
-    templates_folder = "code/templates2"  # Path to your templates2 folder
+    templates_folder = "templates"  # Path to your templates folder
     # print(os.path.exists(templates_folder))
     #show_images(letters, ["Letter Image"])
 
@@ -596,7 +597,7 @@ def get_price(receiptGrey):
 
     # Loop through each letter image
     predictedPrice = []
-    templates_folder = "code/templates2"
+    templates_folder = "templates"
     letters = letters[:4]
     for letter_img in letters:
         # Preprocess the image (ensure it matches template dimensions)
