@@ -1,6 +1,30 @@
 # Fawry Receipt OCR
+## Overview 
+FawryVision is an image processing system designed to help users quickly and accurately extract a Fawry 16-digit code from receipts, Balance Recharge Code   typically used to recharge phone credit. This system aims to reduce the challenges associated with manually reading and entering these codes, which can be difficult for individuals with vision impairments or prone to human error. By leveraging image processing techniques, FawryVision automatically identifies, isolates, and displays the code for easy input, minimizing the potential for misreading digits due to poor print quality, low lighting, or user oversight.
 
-# Setup
+NOTE: This project emphasizes classical image processing techniques to maximize efficiency  and avoid reliance on deep learning. 
+
+## Implementation
+
+### 1. Reciept Segmentation
+We explored two approaches for extracting the receipt from a noisy background. The first approach involved edge segmentation, which proved ineffective on highly noisy images. As an improvement, we employed color-based segmentation using k-means clustering.
+
+![Receipt Image](workflow/reciept_extraction_process.drawio.png)
+
+### 2. Information Extraction
+Template matching is used to detect the 16-digit code associated with the reciept price .
+
+
+![Receipt Image](workflow/template_matching.png)
+
+
+### 3. Code and Price text generation
+![Receipt Image](workflow/final_output.png)
+
+### 4. Measuring Accuracy
+A deep learning pipeline using PyTesseract's pre-trained OCR model has been integrated into the project to evaluate our results.
+---
+# Set Up
 
 ```shell
 pip install -r requirements.txt
@@ -10,7 +34,8 @@ pip install -r requirements.txt
 
 ---
 
-# How to run?
+## How to run?
+---
 
 We have **2 Pipelines** for the OCR process each one has a different approach to extract the receipt:
 
