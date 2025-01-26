@@ -23,7 +23,6 @@ Template matching is used to detect the 16-digit code associated with the reciep
 
 ### 4. Measuring Accuracy
 A deep learning pipeline using PyTesseract's pre-trained OCR model has been integrated into the project to evaluate our results.
----
 # Set Up
 
 ```shell
