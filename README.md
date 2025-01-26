@@ -1,8 +1,8 @@
 # Fawry Receipt OCR
 ## Overview 
-FawryVision is an image processing system designed to help users quickly and accurately extract a Fawry 16-digit code from receipts, Balance Recharge Code   typically used to recharge phone credit. This system aims to reduce the challenges associated with manually reading and entering these codes, which can be difficult for individuals with vision impairments or prone to human error. By leveraging image processing techniques, FawryVision automatically identifies, isolates, and displays the code for easy input, minimizing the potential for misreading digits due to poor print quality, low lighting, or user oversight.
+FawryVision is an image processing system designed to help users quickly and accurately extract a Fawry 16-digit code from receipts, Balance Recharge Code   typically used to recharge phone credit. This system aims to reduce the challenges associated with manually reading and entering these codes. By leveraging image processing techniques, FawryVision automatically identifies, isolates, and displays the code for easy input, minimizing the potential for misreading digits due to poor print quality, low lighting, or user oversight.
 
-NOTE: This project emphasizes classical image processing techniques to maximize efficiency  and avoid reliance on deep learning. 
+**NOTE**: This project emphasizes classical image processing techniques to maximize efficiency  and avoid reliance on deep learning. 
 
 ## Implementation
 
